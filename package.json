@@ -1,0 +1,22 @@
+{
+  "name": "shopping-nodejs",
+  "version": "1.0.0",
+  "description": "thaind-nodejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.2",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.4",
+    "install": "^0.12.2",
+    "jsonwebtoken": "^8.3.0",
+    "mongoose": "^5.3.4",
+    "mongoose-type-number-enums": "^1.0.4",
+    "npm": "^6.4.1"
+  }
+}
