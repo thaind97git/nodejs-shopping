@@ -1,8 +1,8 @@
 var mongoose = require("mongoose");
 
 var imageSchema = new mongoose.Schema({
-    Image: { type: String },
-    SubImage: [ {type: String} ],
+    Image: { type: String, default: "" },
+    SubImage: [ {type: String, default: []} ],
     _product: { type: mongoose.Schema.Types.ObjectId, ref: "products", required: true }
 });
 

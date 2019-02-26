@@ -4,14 +4,15 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const MongooseTypeNumberEnums = require("mongoose-type-number-enums");
 const STATUS = require("./contains/status.response");
-const showRes = require("./library/message");
+const $lib = require("./library/message");
 const jwt = require('jsonwebtoken');
 
-const apiUserRouter = require("./routers/user.router");
-const apiMenuRouter = require("./routers/menu.router");
-const apiProductRouter = require("./routers/product.router");
-const apiSizeRouter = require("./routers/size.router");
-const apiAuthRouter = require("./routers/authenticate.router");
+const apiUserRouter = require("./app/user/user.router");
+const apiMenuRouter = require("./app/menu/menu.router");
+const apiProductRouter = require("./app/product/product.router");
+const apiSizeRouter = require("./app/size/size.router");
+const apiAuthRouter = require("./app/authenticate/authenticate.router");
+const apiColorRouter = require("./app/color/color.router");
 const urlContain = require("./contains/url.contains");
 const serverContain = urlContain.URL_SERVER
 
@@ -30,28 +31,28 @@ app.use("/", apiAuthRouter.createAuth);
 
 
 /*============USER===========*/
-app.use("/", apiUserRouter.getAllUser)
-app.use("/", apiUserRouter.createUser)
-app.use("/", apiUserRouter.updateUser)
-app.use("/", apiUserRouter.deleteUser)
-app.use("/", apiUserRouter.checkLogin);
-// app.use("/", apiUserRouter.updateRole);
+app.use("/", apiUserRouter)
 /*==========END-USER=========*/
 /*/////////////////////////////*/
+
 /*============MENU===========*/
-app.use("/", apiMenuRouter.createParentMenu)
-app.use("/", apiMenuRouter.createSubMenu)
+app.use("/", apiMenuRouter)
 /*==========END-MENU=========*/
 /*/////////////////////////////*/
+
 /*============PRODUCT===========*/
-app.use("/", apiProductRouter.createProduct)
-app.use("/", apiProductRouter.getAllProduct)
-app.use("/", apiProductRouter.deleteProductByCode)
-app.use("/", apiProductRouter.updateProductByCode)
+app.use("/", apiProductRouter)
 /*==========END-PRODUCT=========*/
 /*/////////////////////////////*/
-/*============SIZE===========*/
-app.use("/", apiSizeRouter.createSize)
 
+/*============SIZE===========*/
+app.use("/", apiSizeRouter)
 /*==========END-SIZE=========*/
+/*/////////////////////////////*/
+
+/*============COLOR===========*/
+app.use("/", apiColorRouter)
+/*/////////////////////////////*/
+/*==========END_COLOR=========*/
+
 app.listen(port, () => console.log("Server running at port " + port))
