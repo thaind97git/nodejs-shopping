@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 
+let Sizes = ['X', 'S'];
 var productSchema = new mongoose.Schema({
     productCode: { type: String, required: true, unique: true, trim: true },
     name: { type: String, default: "" },
@@ -16,8 +17,24 @@ var productSchema = new mongoose.Schema({
         SubImage: [{ type: String, default: [] }]
     },
     _colors: [{ type: mongoose.Schema.Types.ObjectId, ref: "colors", default: [] }],
-    _sizes: [{ type: mongoose.Schema.Types.ObjectId, ref: "sizes", default: [] }]
+    _sizes: [{ type: String, validate: [value => Sizes.includes(value), "This size does not exist !"]}]
 });
-
+var Refer = function () {
+    return {
+        getAllSize: function () {
+            return Sizes;
+        },
+        createNewSize: function(size) {
+            if (size === typeof String) {
+                return Sizes.push(size);
+            }
+        },
+        deleteSize: function (size) {
+            if (size === typeof String) {
+                return Sizes = Sizes.filter(s => s !== size);
+            }
+        }
+    }
+}
 var Product = mongoose.model("products", productSchema);
-module.exports = Product;
+module.exports = Product

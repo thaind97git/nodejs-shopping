@@ -1,11 +1,10 @@
 const express = require("express");
+const swaggerUi = require('swagger-ui-express');
+// const swaggerDocument = require('./swagger.json');
 const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const MongooseTypeNumberEnums = require("mongoose-type-number-enums");
-const STATUS = require("./contains/status.response");
-const $lib = require("./library/message");
-const jwt = require('jsonwebtoken');
 
 const apiUserRouter = require("./app/user/user.router");
 const apiMenuRouter = require("./app/menu/menu.router");
@@ -20,6 +19,11 @@ mongoose.connect(serverContain.SERVER_NAME)
 new MongooseTypeNumberEnums().upgradeMongoose(mongoose);
 
 const app = express();
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup({}));
+// app.use('/', swaggerUi.serve);
+// app.get('/', swaggerUi.setup({}));
+
 app.use(cors());
 const port = serverContain.SERVER_PORT;
 app.use(bodyParser.json()); // for parsing application/json

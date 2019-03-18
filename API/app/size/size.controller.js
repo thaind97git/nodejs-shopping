@@ -7,61 +7,40 @@ const $lib = require("../../library/message");
 const UTILS = require("../../library/utils");
 
 const getAllSize = (request, response) => {
-    sizeModel.find({isActive: true}, (err, res) => {
-        if (res) {
-            return response.status($S_CODE.OK)
-                .json($lib.showResponse(
-                    $S_CODE.OK, 
-                    true, 
-                    $S_MESSAGE.SUCCESS, 
-                    res));
+    sizeModel.find({isActive: true}, (err, sizes) => {
+        if (err) {
+            return $lib.errorFunc(response, err);
+        }
+        if (sizes) {
+            return $lib.successFunc(response, sizes);
         } else {
-            return response.status($S_CODE.ERROR)
-                .json($lib.showResponse(
-                    $S_CODE.ERROR, 
-                    false, 
-                    $S_MESSAGE.FAIL, 
-                    null));
+            return $lib.notfoundFunc(response);
         }
     });
 };
 
 const getSizeById = (request, response) => {
-    sizeModel.findById({_id: request.params._id}, (err, res) => {
-        if (res) {
-            return response.status($S_CODE.OK)
-                .json($lib.showResponse(
-                    $S_CODE.OK, 
-                    true, 
-                    $S_MESSAGE.SUCCESS, 
-                    res));
+    sizeModel.findById({_id: request.params._id}, (err, size) => {
+        if (err) {
+            return $lib.errorFunc(response, err);
+        }
+        if (size) {
+            return $lib.successFunc(response, size);
         } else {
-            return response.status($S_CODE.ERROR)
-                .json($lib.showResponse(
-                    $S_CODE.ERROR, 
-                    false, 
-                    $S_MESSAGE.FAIL, 
-                    null));
+            return $lib.notfoundFunc(response);
         }
     });
 };
 
 const getSizeByName = (request, response) => {
-    sizeModel.findOne({name: request.params.name}, (err, res) => {
-        if (res) {
-            return response.status($S_CODE.OK).
-                json($lib.showResponse(
-                    $S_CODE.OK, 
-                    true, 
-                    $S_MESSAGE.SUCCESS, 
-                    res));
+    sizeModel.findOne({name: request.params.name}, (err, size) => {
+        if (err) {
+            return $lib.errorFunc(response, err);
+        }
+        if (size) {
+            return $lib.successFunc(response, size);
         } else {
-            return response.status($S_CODE.ERROR)
-                .json($lib.showResponse(
-                    $S_CODE.ERROR, 
-                    false, 
-                    $S_MESSAGE.FAIL, 
-                    null));
+            return $lib.notfoundFunc(response);
         }
     });
 };
@@ -111,12 +90,7 @@ const createSize = (request, response) => {
                         null));
             })
     } catch (error) {
-        return response.status($S_CODE.ERROR)
-            .json($lib.showResponse(
-                $S_CODE.ERROR, 
-                false, 
-                `Error Catch: ${error}`, 
-                null));
+        return $lib.catchFunc(response, error);
     }
 };
 
@@ -171,12 +145,7 @@ const updateSizeById = (request, response, next) => {
             }
         });
     } catch (error) {
-        return response.status($S_CODE.ERROR)
-            .json($lib.showResponse(
-                $S_CODE.ERROR, 
-                false, 
-                `Error Catch: ${error}`, 
-                null));
+        return $lib.catchFunc(response, error);
     }
 };
 
@@ -231,71 +200,37 @@ const updateSizeByName = (request, response, next) => {
             }
         });
     } catch (error) {
-        return response.status($S_CODE.ERROR)
-            .json($lib.showResponse(
-                $S_CODE.ERROR, 
-                false, 
-                `Error Catch: ${error}`, 
-                null));
+        return $lib.catchFunc(response, error);
     }
 };
 
 const deleteSizeById = (request, response, next) => {
     try {
         const query = {_id: request.params._id};
-        sizeModel.findByIdAndUpdate(query, {isActive: false}, {new: true}, (err, res) => {
-            if (!err) {
-                return response.status($S_CODE.OK)
-                    .json($lib.showResponse(
-                        $S_CODE.OK, 
-                        true, 
-                        $S_MESSAGE.DELETE_SUCCESS, 
-                        res));
+        sizeModel.findByIdAndUpdate(query, {isActive: false}, {new: true}, (err, size) => {
+            if (err) {
+                return $lib.errorFunc(response, err);
             } else {
-                return response.status($S_CODE.ERROR)
-                    .json($lib.showResponse(
-                        $S_CODE.ERROR, 
-                        false, 
-                        $S_MESSAGE.DELETE_FAIL + err, null));
+                return $lib.successFunc(response, null, 'Delete');
             }
         });
     } catch (error) {
-        return response.status($S_CODE.ERROR)
-            .json($lib.showResponse(
-                $S_CODE.ERROR, 
-                false, 
-                `Error Catch: ${error}`, 
-                null));
+        return $lib.catchFunc(response, error);
     }
 };
 
 const deleteSizeByName = (request, response, next) => {
     try {
         const query = {name: request.params.name};
-        sizeModel.findOneAndUpdate(query, {isActive: false}, {new: true}, (err, res) => {
-            if (!err) {
-                return response.status($S_CODE.OK)
-                    .json($lib.showResponse(
-                        $S_CODE.OK, 
-                        true, 
-                        $S_MESSAGE.DELETE_SUCCESS, 
-                        res));
+        sizeModel.findOneAndUpdate(query, {isActive: false}, {new: true}, (err, size) => {
+            if (err) {
+                return $lib.errorFunc(response, err);
             } else {
-                return response.status($S_CODE.ERROR)
-                    .json($lib.showResponse(
-                        $S_CODE.ERROR, 
-                        false, 
-                        $S_MESSAGE.DELETE_FAIL + err, 
-                        null));
+                return $lib.successFunc(response, null, 'Delete');
             }
         });
     } catch (error) {
-        return response.status($S_CODE.ERROR)
-            .json($lib.showResponse(
-                $S_CODE.ERROR, 
-                false, 
-                `Error Catch: ${error}`, 
-                null));
+        return $lib.catchFunc(response, error);
     }
 };
 

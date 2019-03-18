@@ -11,8 +11,13 @@ const bcrypt = require('bcrypt');
 
 const getAllAccount = async (req, res) => {
     userModel.find((err, list) => {
-        if (!err) {
-            res.status($S_CODE.OK).json($lib.showResponse($S_CODE.OK, true, $S_MESSAGE.SUCCESS, list));
+        if (err) {
+            return $lib.errorFunc(res, err);
+        }
+        if (list) {
+            return $lib.successFunc(res, list);
+        } else {
+            return $lib.notfoundFunc(res);
         }
     });
 };
@@ -60,7 +65,11 @@ const checkLogin =  async (req, res, next) => {
         let query = { username: req.body.username };
         var password = req.body.password;
         if(typeof password !== typeof ""){
-            res.json($lib.showResponse($S_CODE.MISSING_DATA, false, 'Password must be string !', null));
+            res.json($lib.showResponse(
+                $S_CODE.MISSING_DATA,
+                false,
+                'Password must be string !',
+                null));
         }
         await userModel.findOne(query, async function (err, user) {
             if (err) {
