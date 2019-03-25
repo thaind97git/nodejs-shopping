@@ -1,7 +1,8 @@
+const path = require('path');
+
 const sizeModel = require("./size.model");
 const productModel = require("../product/product.model");
 const STATUS = require("../../contains/status.response");
-const $S_CODE = STATUS.STATUS;
 const $S_MESSAGE = STATUS.MESSAGE;
 const $lib = require("../../library/message");
 const UTILS = require("../../library/utils");
@@ -54,40 +55,20 @@ const createSize = (request, response) => {
         }
         /*=========Check Product========*/
         Array.isArray(size._products) && 
-            UTILS.UTIL.checkArrayObjectID(colorModel, size._products, $S_MESSAGE.CANNOT_FIND_PRODUCT, response);
+            UTILS.UTIL.checkArrayObjectID(productModel, size._products, $S_MESSAGE.CANNOT_FIND_PRODUCT, response);
 
         sizeModel.create(size)
             .then(rs => {
-                return response.status($S_CODE.OK)
-                    .json($lib.showResponse(
-                        $S_CODE.OK, 
-                        true, 
-                        $S_MESSAGE.CREATE_SUCCESS, 
-                        rs));
+                return $lib.successFunc(response, rs, 'Create');
             })
             .catch(e => {
                 if (e.toString().includes("duplicate")) {
-                    return response.status($S_CODE.DUPLICATE)
-                        .json($lib.showResponse(
-                            $S_CODE.DUPLICATE, 
-                            false, 
-                            e, 
-                            null));
+                    return $lib.errorFunc(response, e, 'duplicate');
                 }
                 if (e.toString().includes("required")) {
-                    return response.status($S_CODE.MISSING_DATA)
-                        .json($lib.showResponse(
-                            $S_CODE.MISSING_DATA, 
-                            false, 
-                            e, 
-                            null));
+                    return $lib.errorFunc(response, e, 'required');
                 }
-                return response.status($S_CODE.ERROR)
-                    .json($lib.showResponse(
-                        $S_CODE.ERROR, 
-                        false, 
-                        `Error: ${e}`, 
-                        null));
+                return $lib.errorFunc(response, e);
             })
     } catch (error) {
         return $lib.catchFunc(response, error);
@@ -111,35 +92,15 @@ const updateSizeById = (request, response, next) => {
 
                 sizeModel.update(query, newSize, (err, result) => {
                     if (!err) {
-                        return response.status($S_CODE.OK)
-                            .json($lib.showResponse(
-                                $S_CODE.OK, 
-                                true, 
-                                $S_MESSAGE.UPDATE_SUCCESS, 
-                                newSize));
+                        return $lib.successFunc(response, result, 'Update');
                     } else {
                         if (e.toString().includes("duplicate")) {
-                            return response.status($S_CODE.DUPLICATE)
-                                .json($lib.showResponse(
-                                    $S_CODE.DUPLICATE, 
-                                    false, 
-                                    e, 
-                                    null));
+                            return $lib.errorFunc(response, e, 'duplicate');
                         }
                         if (e.toString().includes("required")) {
-                            return response.status($S_CODE.MISSING_DATA)
-                                .json($lib.showResponse(
-                                    $S_CODE.MISSING_DATA, 
-                                    false, 
-                                    e, 
-                                    null));
+                            return $lib.errorFunc(response, e, 'required');
                         }
-                        return response.status($S_CODE.ERROR)
-                            .json($lib.showResponse(
-                                $S_CODE.ERROR, 
-                                false, 
-                                `Error: ${e}`, 
-                                null));
+                        return $lib.errorFunc(response, e);
                     }
                 });
             }
@@ -166,35 +127,15 @@ const updateSizeByName = (request, response, next) => {
 
                 sizeModel.update(query, newSize, (err, result) => {
                     if (!err) {
-                        return response.status($S_CODE.OK)
-                            .json($lib.showResponse(
-                                $S_CODE.OK, 
-                                true, 
-                                $S_MESSAGE.UPDATE_SUCCESS, 
-                                newSize));
+                        return $lib.successFunc(response, result, 'update');
                     } else {
                         if (e.toString().includes("duplicate")) {
-                            return response.status($S_CODE.DUPLICATE)
-                                .json($lib.showResponse(
-                                    $S_CODE.DUPLICATE, 
-                                    false, 
-                                    e, 
-                                    null));
+                            return $lib.errorFunc(response, e, 'duplicate');
                         }
                         if (e.toString().includes("required")) {
-                            return response.status($S_CODE.MISSING_DATA)
-                                .json($lib.showResponse(
-                                    $S_CODE.MISSING_DATA, 
-                                    false, 
-                                    e, 
-                                    null));
+                            return $lib.errorFunc(response, e, 'required');
                         }
-                        return response.status($S_CODE.ERROR)
-                            .json($lib.showResponse(
-                                $S_CODE.ERROR, 
-                                false, 
-                                `Error: ${e}`, 
-                                null));
+                        return $lib.errorFunc(response, e);
                     }
                 });
             }

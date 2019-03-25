@@ -66,11 +66,11 @@ const errorFunc = (response, error, type) => {
     let text = `Error : ${error}`;
     let code = $S_CODE.ERROR;
     if (type) {
-        if (type === 'duplicate') {
+        if (type.toLowerCase() === 'duplicate') {
             text = error;
             code = $S_CODE.DUPLICATE
         }
-        if (type === 'required') {
+        if (type.toLowerCase() === 'required') {
             text = error;
             code = $S_CODE.MISSING_DATA
         }
@@ -97,13 +97,13 @@ const errorFunc = (response, error, type) => {
 const successFunc = (response, data, type) => {
     let r = $S_MESSAGE.SUCCESS;
     if (type) {
-        if (type === 'Update') {
+        if (type.toLowerCase() === 'update') {
             r = $S_MESSAGE.UPDATE_SUCCESS;
         }
-        if (type === 'Create') {
+        if (type.toLowerCase() === 'create') {
             r = $S_MESSAGE.CREATE_SUCCESS;
         }
-        if (type === 'Delete') {
+        if (type.toLowerCase() === 'delete') {
             r = $S_MESSAGE.DELETE_SUCCESS;
         }
     }
@@ -129,13 +129,13 @@ const successFunc = (response, data, type) => {
 const failFunc = (response, data, type) => {
     let r = $S_MESSAGE.FAIL;
     if (type) {
-        if (type === 'Update') {
+        if (type.toLowerCase() === 'update') {
             r = $S_MESSAGE.UPDATE_FAIL;
         }
-        if (type === 'Create') {
+        if (type.toLowerCase() === 'create') {
             r = $S_MESSAGE.CREATE_FAIL;
         }
-        if (type === 'Delete') {
+        if (type.toLowerCase() === 'delete') {
             r = $S_MESSAGE.DELETE_FAIL;
         }
     }

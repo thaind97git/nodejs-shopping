@@ -17,7 +17,7 @@ var productSchema = new mongoose.Schema({
         SubImage: [{ type: String, default: [] }]
     },
     _colors: [{ type: mongoose.Schema.Types.ObjectId, ref: "colors", default: [] }],
-    _sizes: [{ type: String, validate: [value => Sizes.includes(value), "This size does not exist !"]}]
+    _sizes: [{ type: mongoose.Schema.Types.ObjectId, ref: "sizes", default: [] }]
 });
 var Refer = function () {
     return {

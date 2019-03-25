@@ -3,94 +3,68 @@ const parentMenuModel = require(`./parent.menu.model`);
 const subMenuModel = require("./sub.menu.model");
 const productModel = require("../product/product.model");
 const STATUS = require("../../contains/status.response");
+const $S_MESSAGE = STATUS.MESSAGE;
+const UTILS = require("../../library/utils");
 const $lib = require("../../library/message");
 
 
 /*============PARENT-MENU-CONTROLLER===========*/
-const createParentMenu = async function(req, res, next){
+const createParentMenu = function(request, response, next){
     try {
-        const _subMenusArr = req.body._subMenus == null ? [] : req.body._subMenus;
-        const name = req.body.name == null ? "" : req.body.name.trim();
+        const parentMenu = {
+            name: request.body.name,
+            _subMenus: request.body._subMenus,
+            isActive: request.body.isActive
+        }
+        /*=========Check SubMenu========*/
+        Array.isArray(parentMenu._subMenus) && 
+            UTILS.UTIL.checkArrayObjectID(subMenuModel, parentMenu._subMenus, $S_MESSAGE.CANNOT_FIND_SUBMENU, response);
 
-        if (!name || name.length == 0) {
-            return res.json($lib.showResponse(STATUS.MISSING_DATA, false, 
-                "_parentMenu name (name) must not null", null))
-            // Check name of subMenu in parentMenu must not null
-        } else {
-            await subMenuModel.findOne({name: name}, (err , rs) => {
-                if (!!rs) {
-                    return res.json($lib.showResponse(STATUS.DUPLICATE, false, 
-                        `_subMenus name ${name} duplicate !`, null))
+        parentMenu.create(parentMenu)
+            .then(rs => {
+                return $lib.successFunc(response, rs, 'Create');
+            })
+            .catch(e => {
+                if (e.toString().includes("duplicate")) {
+                    return $lib.errorFunc(response, e, 'duplicate');
                 }
-            }) // Check name of subMenu in parentMenu can not duplicate
-        }
-        
-        for (let i = 0; i < _subMenusArr.length; i++) {
-            const element = _subMenusArr[i];
-            await subMenuModel.findById({_id: element}, (err, rs) => {
-                if (err) {
-                    return res.json($lib.showResponse(STATUS.NOTFOUND, false, 
-                        `_subMenus ${_subMenusArr[i]} can not find !`, null))
+                if (e.toString().includes("required")) {
+                    return $lib.errorFunc(response, e, 'required');
                 }
-            });
-        }
-        var parentMenu = {
-            name: req.body.name,
-            _subMenus: _subMenusArr,
-            isActive: req.body.isActive == null ? false : req.body.isActive
-        }
-        await parentMenuModel.create(parentMenu)
-        return res.json($lib.showResponse(STATUS.OK, true, 
-            "Create parentMenu success !", parentMenu));
+                return $lib.errorFunc(response, e);
+            })
     } catch (error) {
-        next(error)
+        return $lib.catchFunc(response, error);
     }
 }
 
 /*============SUB-MENU-CONTROLLER===========*/
-const createSubMenu = async function(req, res, next){
+const createSubMenu = function(request, response, next){
     try {
-        
-        var subMenu = {
-            name: req.body.name,
-            _product: req.body._product == null ? [] : req.body._product,
-            _parentMenu: req.body._parentMenu,
-            isActive: req.body.isActive == null ? false : req.body.isActive == 0 ? false : true
-        };
-        if(subMenu.name == null){
-            return res.json($lib.showResponse(STATUS.NOTFOUND, false, 
-                "Create subMenu fail, subMenu (name) name must not null!", null));
-        } //Check name of Menu must not null
-        else{
-            if(await subMenuModel.findOne({name: subMenu.name}) != null){
-                return res.json($lib.showResponse(STATUS.NOTFOUND, false, 
-                    "Create subMenu fail, subMenu (name) duplicate!", null));
-            }
-        };//Check duplicate name of Menu
-        if(subMenu._parentMenu == null){
-            return res.json($lib.showResponse(STATUS.NOTFOUND, false, 
-                "Create subMenu fail, Parent Menu (_parentMenu) must not null!", null));
-        }//Check parent menu must not null
-        else{
-            if(await productModel.findById({_id : subMenu._parentMenu}) == null){
-                return res.json($lib.showResponse(STATUS.NOTFOUND, false, 
-                    "Create subMenu fail, Parent Menu (_parentMenu) can not find!", null));
-            }
-        };// Check parent menu isEmpty ?
+        const subMenu = {
+            name: request.body.name,
+            _parentMenu: request.body._parentMenu,
+            isActive: request.body.isActive
+        }
+        /*=========Check SubMenu========*/
+        Boolean(!!subMenu._parentMenu) && 
+            UTILS.UTIL.checkOneObjectID(parentMenuModel, subMenu._parentMenu, $S_MESSAGE.CANNOT_FIND_PARENTMENU, response);
 
-        if(!!subMenu._product){
-            for(var i = 0; i <= Object.keys(subMenu._product).length - 1; i++){
-                if(await productModel.findOne({_id : subMenu._product[i]}) == null){
-                    return res.json($lib.showResponse(STATUS.NOTFOUND, false, 
-                        "Create subMenu fail, Product (_product) can not find!", null));
+        subMenu.create(parentMenu)
+            .then(rs => {
+                return $lib.successFunc(response, rs, 'Create');
+            })
+            .catch(e => {
+                if (e.toString().includes("duplicate")) {
+                    return $lib.errorFunc(response, e, 'duplicate');
                 }
-            }
-        };//Check product isEmpty ?
-        await subMenuModel.create(subMenu);
-        return res.json($lib.showResponse(STATUS.OK, true, 
-            "Create subMenu success !", await subMenuModel.findOne({name: subMenu.name})));
+                if (e.toString().includes("required")) {
+                    return $lib.errorFunc(response, e, 'required');
+                }
+                return $lib.errorFunc(response, e);
+            })
     } catch (error) {
-        next(error)
+        return $lib.catchFunc(response, error);
     }
 }
 
