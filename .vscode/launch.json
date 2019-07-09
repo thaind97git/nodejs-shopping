@@ -8,7 +8,7 @@
             "name": "Launch localhost",
             "type": "chrome",
             "request": "launch",
-            "url": "http://localhost:3000/index.js",
+            "url": "http://localhost:3001/index.js",
             "webRoot": "${workspaceFolder}/wwwroot"
         },
         {

@@ -2,12 +2,13 @@ const STATUS = require(`../contains/status.response`);
 const $S_CODE = STATUS.STATUS;
 const $S_MESSAGE = STATUS.MESSAGE;
 
-const showResponse = (status, isSuccess, message, data ) => {
+const showResponse = (status, isSuccess, message, data, count ) => {
     return {
         status: status,
         success: isSuccess,
         message: message,
-        data: data
+        data: data,
+        count: count || 0
     }
 }
 const showToken = (status, isSuccess, message, token ) => {

@@ -13,6 +13,7 @@ const apiSizeRouter = require("./app/size/size.router");
 const apiAuthRouter = require("./app/authenticate/authenticate.router");
 const apiColorRouter = require("./app/color/color.router");
 const urlContain = require("./contains/url.contains");
+const apiRedisRouter = require("./app/redis/redis.router");
 const serverContain = urlContain.URL_SERVER
 
 mongoose.connect(serverContain.SERVER_NAME)
@@ -33,12 +34,12 @@ app.use("/", apiAuthRouter.authenticate);
 app.use("/", apiAuthRouter.createAuth);
 
 
+app.use("/", apiRedisRouter)
 
 /*============USER===========*/
 app.use("/", apiUserRouter)
 /*==========END-USER=========*/
 /*/////////////////////////////*/
-
 /*============MENU===========*/
 app.use("/", apiMenuRouter)
 /*==========END-MENU=========*/

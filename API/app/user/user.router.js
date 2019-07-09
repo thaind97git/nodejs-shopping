@@ -7,7 +7,7 @@ var router = express.Router()
 
 
 
-router.get(userContain.ALL_USER,authController.authenticate, userController.getAllAccount);
+router.get(userContain.ALL_USER, userController.getAllAccount);
 router.post(userContain.CREATE_USER, userController.createUser);
 router.put(userContain.UPDATE_USER, userController.updateUserByUsername)
 // router.put(userContain.UPDATE_ROLE,authController.authenticate, userController.updateRoleByUsername);

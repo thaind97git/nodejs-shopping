@@ -9,62 +9,75 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 
-const getAllAccount = async (req, res) => {
-    userModel.find((err, list) => {
-        if (err) {
-            return $lib.errorFunc(res, err);
-        }
-        if (list) {
-            return $lib.successFunc(res, list);
-        } else {
-            return $lib.notfoundFunc(res);
-        }
-    });
+const getAllAccount = async (req, res, next) => {
+    try {
+        const { pageSize, pageIndex } = req.body;
+        // userModel.count({}, (err, count) => {
+        //     if (!err) {
+        //     }
+        // });
+        userModel.find(null, null, { skip: pageIndex || 0, limit: pageSize || 5 }, (err, list) => {
+            if (err) {
+                return $lib.errorFunc(res, err);
+            }
+            if (list) {
+
+                return $lib.successFunc(res, list);
+            } else {
+                return $lib.notfoundFunc(res);
+            }
+        });
+    } catch (error) {
+        next(error)
+    }
 };
 
-const createUser = async (req, res, next) => {
+const createUser = (req, res, next) => {
     try {
         const user = {
             username: req.body.username,
-            password: req.password,
+            password: req.body.password,
             _roles: req.body._roles,
             email: req.body.email,
-            isActive: req.isActive
+            isActive: req.body.isActive
         }
         if (user.password !== null || user.password.trim().length !== 0) {
-            user.password = bcrypt.hashSync(req.body.password, 10);
+            user.password = bcrypt.hashSync(user.password, 10);
         }
         if (user._roles != null) {
-            roleModel.findById({_id: user._roles}, (error, role) => {
+            roleModel.findById({ _id: user._roles }, (error, role) => {
                 if (error) {
-                    res.status($S_CODE.NOTFOUND).json($lib.showResponse($S_CODE.NOTFOUND, false, "Can not find role !", null));
+                    return $lib.notfoundFunc(res, user._roles);
                 }
             })
         }
-        await userModel.create(user)
-            .then(async (rs) => {
-                await roleModel.findByIdAndUpdate({ _id: user._roles }, { $push: { _users: rs._id } });
-                res.status($S_CODE.OK).json($lib.showResponse($S_CODE.OK, true, $S_MESSAGE.SUCCESS, rs));
+        userModel.create(user)
+            .then(rs => {
+                roleModel.findByIdAndUpdate({ _id: user._roles }, { $push: { _users: rs._id } }, (err, model) => {
+                    return $lib.successFunc(res, rs, 'Create');
+                });
+                // res.status($S_CODE.OK).json($lib.showResponse($S_CODE.OK, true, $S_MESSAGE.SUCCESS, rs));
             })
             .catch(e => {
                 if (e.toString().includes("duplicate")) {
-                    res.status($S_CODE.DUPLICATE).json($lib.showResponse($S_CODE.DUPLICATE, false, e, null));    
+                    res.status($S_CODE.DUPLICATE).json($lib.showResponse($S_CODE.DUPLICATE, false, e, null));
                 }
                 if (e.toString().includes("required")) {
                     res.status($S_CODE.MISSING_DATA).json($lib.showResponse($S_CODE.MISSING_DATA, false, e, null));
                 }
-                res.status(STATUS.ERROR).json($lib.showResponse($S_CODE.ERROR, false, e, null))
+                res.status($S_CODE.ERROR).json($lib.showResponse($S_CODE.ERROR, false, e, null))
             });
     } catch (error) {
-        res.status($S_CODE.ERROR).json($lib.showResponse($S_CODE.ERROR, false, error, null));
+        // res.status($S_CODE.ERROR).json($lib.showResponse($S_CODE.ERROR, false, 'error', null));
+        next(error)
     }
 };
 
-const checkLogin =  async (req, res, next) => {
+const checkLogin = async (req, res, next) => {
     try {
         let query = { username: req.body.username };
         var password = req.body.password;
-        if(typeof password !== typeof ""){
+        if (typeof password !== typeof "") {
             res.json($lib.showResponse(
                 $S_CODE.MISSING_DATA,
                 false,
